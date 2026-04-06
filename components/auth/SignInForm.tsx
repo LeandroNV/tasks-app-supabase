@@ -12,7 +12,7 @@ import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { AuthFormProps } from "./AuthForm";
-import { signup } from "@/actions/auth/auth";
+import { login, signup } from "@/actions/auth/auth";
 
 
 const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
@@ -50,7 +50,8 @@ const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
         setisLoading(true);
 
         try {
-              console.log(data);
+            const res = await login(data)
+            if(res.success) window.location.reload()
          
         } catch (error: any) {
             toast.error(error.message, { duration: 2500 });

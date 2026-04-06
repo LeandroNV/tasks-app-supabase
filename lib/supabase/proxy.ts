@@ -1,3 +1,4 @@
+import { getUser } from "@/actions/auth/get-user";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -32,13 +33,19 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Do not run code between createServerClient and
-  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
+  const user = await getUser();
 
-  // IMPORTANT: If you remove getClaims() and you use server-side rendering
-  // with the Supabase client, your users may be randomly logged out.
-  await supabase.auth.getClaims();
+  const protectedRoutes = ["/dashboard", "/profile", "/update-password"];
+
+  // Si no hay usuario autenticado y está intentando acceder a rutas protegidas, redirigir al login.
+  if (!user && protectedRoutes.includes(request.nextUrl.pathname)) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // Si hay usuario autenticado y está intentando acceder a login, redirigir al dashboard
+  if (user && request.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
 
   return supabaseResponse;
 }
