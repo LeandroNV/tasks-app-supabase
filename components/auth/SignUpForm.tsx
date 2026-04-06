@@ -12,6 +12,7 @@ import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { AuthFormProps } from "./AuthForm";
+import { signup } from "@/actions/auth/auth";
 
 
 
@@ -57,8 +58,19 @@ const SignUpForm = ({ setTypeSelected }: AuthFormProps) => {
         setisLoading(true);
 
         try {
-            console.log(user);
+            const res = await signup(user)
+            
+            if( res.success) {
+                toast.success(`Hola ${user.name}. Te hemos enviado un correo para validar tu cuenta.`,
+                {
+                    duration: 4000, icon: '👋'
+                }
+                )
+                setTypeSelected('sign-in')
+                form.reset()
+            }
 
+            console.log(user);
         } catch (error: any) {
             // Manejar errores específicos de Supabase
             if (error.message.includes('User already registered')) {
@@ -191,12 +203,13 @@ const SignUpForm = ({ setTypeSelected }: AuthFormProps) => {
                 {/* ========== Sign In ========= */}
                 <p className="text-center text-sm mt-6 text-white">
                     ¿Ya tienes una cuenta?{" "}
-                    <span
+                    <button
                         onClick={() => !isLoading && setTypeSelected('sign-in')}
                         className="underline underline-offset-4 hover:text-primary cursor-pointer"
+                        type="button"
                     >
                         Inicia Sesión
-                    </span>
+                    </button>
                 </p>
 
             </div>

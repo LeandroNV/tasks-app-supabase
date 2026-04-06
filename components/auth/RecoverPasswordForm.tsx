@@ -40,7 +40,7 @@ const RecoverPasswordForm = ({ setTypeSelected }: AuthFormProps) => {
 
     // ============ Password Recovery ===========
     const onSubmit = async (user: z.infer<typeof formSchema>) => {
-        setisLoading(true);
+        setisLoading(true); 
 
         try {
       
