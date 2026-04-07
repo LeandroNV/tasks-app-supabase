@@ -1,3 +1,5 @@
+"use server";
+
 import type { User } from "@/interfaces/user";
 import { createClient } from "@/lib/supabase/server";
 

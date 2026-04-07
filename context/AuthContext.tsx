@@ -9,6 +9,7 @@ import {
 } from "react";
 import { getUser } from "@/actions/auth/get-user";
 import type { User } from "@/interfaces/user";
+import { createClient } from "@/lib/supabase/client";
 
 export interface AuthContextType {
   user: User | null;
@@ -39,9 +40,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  useEffect(() => {
-    void getUserData();
+  const authState = useCallback(async () => {
+    const supabase = createClient();
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      const eventTypes = [
+        "INITIAL_SESSION",
+        "USER_UPDATED",
+        "TOKEN_REFRESHED",
+        "PASSWORD_RECOVERY",
+        "SIGNED_OUT",
+      ];
+
+      if (eventTypes.includes(event)) {
+        if (session) {
+          getUserData();
+        } else {
+          setUser(null);
+        }
+      }
+    });
   }, [getUserData]);
+
+  useEffect(() => {
+    void authState();
+  }, [authState]);
 
   return (
     <AuthContext.Provider value={{ user, isLoading, getUserData }}>

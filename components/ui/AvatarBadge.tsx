@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 
 interface AvatarBadgeProps {
   name: string | null;
-  avatar_url?: string;
+  avatar_url?: string | null;
 }
 
 export const AvatarBadge = ({ name, avatar_url }: AvatarBadgeProps) => {
