@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
-import { AuthFormProps } from "./AuthForm";
+import type { AuthFormProps } from "./AuthForm";
 import { sendRecoveryEmail } from "@/actions/auth/auth";
 
 

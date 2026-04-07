@@ -10,9 +10,13 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { updatePassword } from "@/actions/auth/auth";
+import { useRouter } from "next/navigation";
 
 const UpdatePasswordForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const router = useRouter()
 
   const formSchema = z
     .object({
@@ -40,7 +44,14 @@ const UpdatePasswordForm = () => {
     setIsLoading(true);
 
     try {
-      console.log(data);
+      const res = await updatePassword(data)
+
+      if(res.success) {
+        toast.success(res.message, {
+          duration: 2500
+        })
+        router.push('/profile')
+      } 
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Algo salió mal";
       toast.error(message, { duration: 2500 });

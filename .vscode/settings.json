@@ -2,5 +2,8 @@
   "editor.defaultFormatter": "biomejs.biome",
   "notebook.defaultFormatter": "biomejs.biome",
   "editor.formatOnSave": true,
-  "editor.formatOnPaste": true
+  "editor.formatOnPaste": true,
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  }
 }
