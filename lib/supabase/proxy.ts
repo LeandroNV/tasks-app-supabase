@@ -35,7 +35,7 @@ export async function updateSession(request: NextRequest) {
 
   const user = await getUser();
 
-  const protectedRoutes = ["/dashboard", "/profile", "/update-password"];
+  const protectedRoutes = ["/dashboard", "/profile"];
 
   // Si no hay usuario autenticado y está intentando acceder a rutas protegidas, redirigir al login.
   if (!user && protectedRoutes.includes(request.nextUrl.pathname)) {

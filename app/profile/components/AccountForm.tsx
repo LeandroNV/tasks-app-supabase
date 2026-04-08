@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import PhoneInput from "@/components/PhoneInput";
-
+import { updateAvatar } from "@/actions/auth/update-avatar";
 const profileSchema = z.object({
   name: z.string().min(2, {
     message: "El nombre debe tener al menos 2 caracteres.",
@@ -104,7 +104,16 @@ export default function AccountForm({
     setIsLoadingImage(true);
 
     try {
-      // Subida de avatar (pendiente)
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("userId", user.id);
+
+      const response = await updateAvatar(formData);
+
+      if (response.publicUrl) {
+        setAvatarUrl(response.publicUrl);
+        toast.success("Avatar actualizado correctamente");
+      }
     } finally {
       setIsLoadingImage(false);
       event.target.value = "";
@@ -127,7 +136,7 @@ export default function AccountForm({
                 width={1000}
                 height={1000}
                 alt="user-img"
-                onError={() => setAvatarUrl("")} // Si hay error, mostrar icono por defecto
+                onError={() => setAvatarUrl("")}
               />
             ) : (
               <CircleUserRound className="w-full h-full" />
