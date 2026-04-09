@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import PhoneInput from "@/components/PhoneInput";
 import { updateAvatar } from "@/actions/auth/update-avatar";
+import { updateProfile } from "@/actions/auth/update-profile";
 const profileSchema = z.object({
   name: z.string().min(2, {
     message: "El nombre debe tener al menos 2 caracteres.",
@@ -72,7 +73,14 @@ export default function AccountForm({
     try {
       setLoading(true);
 
-      console.log(values);
+      const res = await updateProfile({
+        id: user?.id,
+        name: values.name,
+        phone: values.phone,
+        country_code: values.country_code,
+      });
+
+      toast.success("Perfil actualizado.");
 
       if (onSuccess) onSuccess();
     } catch (error) {
