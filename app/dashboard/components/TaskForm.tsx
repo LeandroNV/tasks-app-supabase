@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,6 +45,9 @@ export function TaskForm({ isOpen, onClose, task, onSuccess }: TaskFormProps) {
     const [loading, setLoading] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [removeImage, setRemoveImage] = useState(false);
+    const [fileInputKey, setFileInputKey] = useState(0);
+    const wasDialogOpenRef = useRef(false);
+    const previousTaskIdRef = useRef<string | null>(null);
 
     const form = useForm<TaskFormValues>({
         resolver: zodResolver(taskSchema),
@@ -57,7 +60,24 @@ export function TaskForm({ isOpen, onClose, task, onSuccess }: TaskFormProps) {
     });
 
     useEffect(() => {
-        if (!isOpen) return;
+        if (!isOpen) {
+            wasDialogOpenRef.current = false;
+            return;
+        }
+
+        const justOpened = !wasDialogOpenRef.current;
+        wasDialogOpenRef.current = true;
+
+        const taskId = task?.id ?? null;
+        const switchedTaskWhileOpen =
+            previousTaskIdRef.current !== null &&
+            taskId !== null &&
+            previousTaskIdRef.current !== taskId;
+
+        if (justOpened || switchedTaskWhileOpen) {
+            setFileInputKey((k) => k + 1);
+        }
+        previousTaskIdRef.current = taskId;
 
         if (task) {
             form.reset({
@@ -223,11 +243,21 @@ export function TaskForm({ isOpen, onClose, task, onSuccess }: TaskFormProps) {
 
                         <Field>
                             <FileInput
+                                key={fileInputKey}
                                 accept="image/jpeg, image/png, image/gif, image/webp"
                                 multiple={false}
                                 onFilesSelected={(files) => {
                                     if (files.length > 0) {
-                                        setSelectedFile(files[0] as File);
+                                        const f = files[0];
+                                        const isRemotePlaceholder =
+                                            f.type === "image/remote" ||
+                                            (f.size === 0 && !f.name);
+                                        if (isRemotePlaceholder) {
+                                            setSelectedFile(null);
+                                            setRemoveImage(false);
+                                            return;
+                                        }
+                                        setSelectedFile(f);
                                         setRemoveImage(false);
                                     } else {
                                         setSelectedFile(null);

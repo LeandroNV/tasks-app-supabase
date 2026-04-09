@@ -43,19 +43,23 @@ export function FileInput({
 }: FileInputProps) {
   const [files, setFiles] = useState<FileWithPreview[]>(defaultFiles);
 
-  // Precargar imagen inicial si existe
+  // Sincronizar solo cuando cambia la URL inicial (p. ej. otra tarea). No depender de
+  // files.length: si el usuario borra la imagen, files queda [] y no debe reaparecer la remota.
   React.useEffect(() => {
-    if (initialImageUrl && files.length === 0) {
-      const initialFile = {
-        name: "",
-        size: 0,
-        type: "image/remote",
-        preview: initialImageUrl,
-      } as any as FileWithPreview;
-
-      setFiles([initialFile]);
+    if (!initialImageUrl) {
+      setFiles([]);
+      return;
     }
-  }, [initialImageUrl, files.length]);
+
+    const initialFile = {
+      name: "",
+      size: 0,
+      type: "image/remote",
+      preview: initialImageUrl,
+    } as unknown as FileWithPreview;
+
+    setFiles([initialFile]);
+  }, [initialImageUrl]);
 
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
